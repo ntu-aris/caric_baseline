@@ -3,7 +3,7 @@
 ## caric_baseline
 This repo is for CDC2023 challange caric_baseline. The challenge details can be find in 
 https://ntu-aris.github.io/caric/
-The main task can be divided into two part, the Task Assignment Part and the Swarm Planning Part. Until 2023/08/23 the baseline is just for mbs task, we wish it can help the participants to solve some techinical problem.
+The main task can be divided into two part, the Task Assignment Part and the Swarm Planning Part. Until 2023/08/23 the baseline is just for mbs task, we wish it can help the participants to solve some techinical problems.
 ## Update Log
 2023/08/23 Update the mbs baseline 
 ## Quick Demo
