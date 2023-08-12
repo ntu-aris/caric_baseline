@@ -16,5 +16,9 @@ The main task can be divided into two part, the Task Assignment Part and the Swa
 ### Code Example
     xxh_initial_task.h/cpp
 ## Swarm planning part
+### Methodology
+    In the baseline approach, due to the mismatch between the capabilities of the explorer and the photographer, a grouping strategy is employed during task initialization based on the number of explorers. The positioning control of the target bounding box follows a strategy of exploring along the longest edge before scanning. Greedy strategies are utilized for controlling the gimbal orientation and the orientation of the agent. Upon completion of the task, a return to the starting point is executed.
+### Code Example
+    baseline_planner.h/cpp
 
     
