@@ -1,0 +1,8 @@
+string source            # Source of the topic
+string[] targets         # Names of nodes that can receive this message,
+                         # set to 'all' if all nodes can receive the message
+string topic_name
+string package_name
+string message_type
+---
+string result            # Return 'succeeded' for 'failed'
