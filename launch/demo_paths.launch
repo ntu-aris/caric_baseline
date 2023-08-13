@@ -8,13 +8,13 @@
     <!-- <include file="$(find caric_mission)/launch/run_crane.launch"/> -->
 
     <!-- Central coordinator -->
-    <node name="gcs_talker" pkg="caric_demo" type="initial_task" output="screen" />
+    <node name="gcs_talker" pkg="caric_demo" type="initial_task"  />
 
     <group ns="jurong">
         
         <arg name="namespace"  default="jurong" />
 
-        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" >
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" output="screen" >
 
             <!-- Input topics -->
             <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
@@ -38,7 +38,7 @@
     
         <arg name="namespace"  default="changi" />
 
-        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" output="screen">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" >
 
             <!-- Input topics -->
             <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
@@ -62,8 +62,8 @@
         
         <arg name="namespace"  default="raffles" />
 
-        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
-
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" >
+            
             <!-- Input topics -->
             <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
             <remap from="/nbr_odom_cloud"              to="/$(arg namespace)/nbr_odom_cloud" />
@@ -131,6 +131,6 @@
     </group>
     
     <!-- For visualization -->
-    <node name="odom2tf" pkg="caric_mission" type="odom2tf.py" output="screen" />
+    <node name="odom2tf" pkg="caric_mission" type="odom2tf.py"  />
 
 </launch>

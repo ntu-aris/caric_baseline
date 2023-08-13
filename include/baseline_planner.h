@@ -1859,6 +1859,7 @@ public:
         cout << "size of path assigned:  " << map_set.size() << endl;
         finish_init = true;
     }
+
     void update_map(const sensor_msgs::PointCloud2ConstPtr &cloud, const sensor_msgs::PointCloud2ConstPtr &Nbr, const nav_msgs::OdometryConstPtr &msg)
     {
         if (!is_leader)
@@ -1897,6 +1898,7 @@ public:
             }
         }
     }
+    
     void update_gimbal(Eigen::Vector3d gimbal_position)
     {
         if (!finish_init)
@@ -1917,6 +1919,7 @@ public:
             global_map.update_gimbal(rpy, false);
         }
     }
+    
     void update_position(Eigen::Vector3d point, Eigen::Matrix3d rotation)
     {
         if (!odom_get)
@@ -1942,6 +1945,7 @@ public:
         }
         odom_get = true;
     }
+    
     void replan()
     {
         if (!finish_init)
@@ -2119,6 +2123,7 @@ public:
             }
         }
     }
+    
     bool update_target_waypoint()
     {
         if (odom_get && finish_init)
@@ -2141,6 +2146,7 @@ public:
             return false;
         }
     }
+    
     bool get_cmd(trajectory_msgs::MultiDOFJointTrajectory &cmd, geometry_msgs::Twist &gimbal)
     {
         if (!finish_first_planning)
@@ -2174,6 +2180,7 @@ public:
             return false;
         }
     }
+    
     visualization_msgs::MarkerArray Draw_map()
     {
         if (!finish_init)
@@ -2727,33 +2734,21 @@ private:
 class Agent
 {
 public:
-    Agent()
+    Agent(ros::NodeHandlePtr &nh_ptr_)
+    : nh_ptr(nh_ptr_)
     {
-        nh_ = ros::NodeHandle();  // nodehandle for communicate and initialise the task
-        nh2_ = ros::NodeHandle(); // nodehandle for update neibors,odom,gimbal
-        nh3_ = ros::NodeHandle(); // nodehandle for update map
-        nh4_ = ros::NodeHandle(); // nodehandle for motion
-        nh5_ = ros::NodeHandle(); // nodehandle for visulization
 
-        nh_.setCallbackQueue(&custom_queue1);
-        nh2_.setCallbackQueue(&custom_queue2);
-        nh3_.setCallbackQueue(&custom_queue3);
-        nh4_.setCallbackQueue(&custom_queue4);
-        nh5_.setCallbackQueue(&custom_queue5);
+        TimerProbeNbr = nh_ptr->createTimer(ros::Duration(1.0 / 10.0), &Agent::TimerProbeNbrCB, this);
+        TimerPlan     = nh_ptr->createTimer(ros::Duration(1.0 / 2.0),  &Agent::TimerPlanCB,     this);
+        TimerCmdOut   = nh_ptr->createTimer(ros::Duration(1.0 / 10.0), &Agent::TimerCmdOutCB,   this);
+        TimerViz      = nh_ptr->createTimer(ros::Duration(1.0 / 1.0),  &Agent::TimerVizCB,      this);
 
-        Debug_timer = nh_.createTimer(ros::Duration(1.0 / 10.0), &Agent::Debugtimer, this);
-        Debug_timer2 = nh2_.createTimer(ros::Duration(1.0 / 2.0), &Agent::Debugtimer2, this);
-        Debug_timer3 = nh3_.createTimer(ros::Duration(1.0 / 1.0), &Agent::Debugtimer3, this);
-        Debug_timer4 = nh4_.createTimer(ros::Duration(1.0 / 10.0), &Agent::Debugtimer4, this);
-        Debug_timer5 = nh5_.createTimer(ros::Duration(1.0 / 1.0), &Agent::Debugtimer5, this);
+        task_sub_ = nh_ptr->subscribe("/task_assign" + nh_ptr->getNamespace(), 10, &Agent::TaskCallback, this);
+        com_sub_  = nh_ptr->subscribe("/broadcast" + nh_ptr->getNamespace(), 1, &Agent::ComCallback, this);
+        client    = nh_ptr->serviceClient<caric_mission::CreatePPComTopic>("/create_ppcom_topic");
+        communication_pub_ = nh_ptr->advertise<std_msgs::String>("/broadcast", 10);
 
-        task_sub_ = nh_.subscribe("/task_assign" + nh_.getNamespace(), 10, &Agent::TaskCallback, this);
-
-        com_sub_ = nh_.subscribe("/broadcast" + nh_.getNamespace(), 1, &Agent::ComCallback, this);
-
-        client = nh_.serviceClient<caric_mission::CreatePPComTopic>("/create_ppcom_topic");
-        communication_pub_ = nh_.advertise<std_msgs::String>("/broadcast", 10);
-        string str = nh_.getNamespace();
+        string str = nh_ptr->getNamespace();
         str.erase(0, 1);
         srv.request.source = str;
         srv.request.targets.push_back("all");
@@ -2774,57 +2769,52 @@ public:
         }
         communication_initialise = true;
 
-        odom_sub_ = nh2_.subscribe("/ground_truth/odometry", 10, &Agent::OdomCallback, this);
-        gimbal_sub_ = nh2_.subscribe("/firefly/gimbal", 10, &Agent::GimbalCallback, this);
-        cloud_sub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh3_, "/cloud_inW", 10);
-        nbr_sub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh3_, "/nbr_odom_cloud", 10);
-        odom_filter_sub_ = new message_filters::Subscriber<nav_msgs::Odometry>(nh3_, "/ground_truth/odometry", 10);
-        sync_ = new message_filters::Synchronizer<MySyncPolicy>(MySyncPolicy(10), *cloud_sub_, *nbr_sub_, *odom_filter_sub_);
+        odom_sub_        = nh_ptr->subscribe("/ground_truth/odometry", 10, &Agent::OdomCallback, this);
+        gimbal_sub_      = nh_ptr->subscribe("/firefly/gimbal", 10, &Agent::GimbalCallback, this);
+
+        cloud_sub_       = new message_filters::Subscriber<sensor_msgs::PointCloud2>(*nh_ptr, "/cloud_inW", 10);
+        nbr_sub_         = new message_filters::Subscriber<sensor_msgs::PointCloud2>(*nh_ptr, "/nbr_odom_cloud", 10);
+        odom_filter_sub_ = new message_filters::Subscriber<nav_msgs::Odometry>(*nh_ptr, "/ground_truth/odometry", 10);
+        sync_            = new message_filters::Synchronizer<MySyncPolicy>(MySyncPolicy(10), *cloud_sub_, *nbr_sub_, *odom_filter_sub_);
+
         sync_->registerCallback(boost::bind(&Agent::MapCallback, this, _1, _2, _3));
 
-        motion_pub_ = nh4_.advertise<trajectory_msgs::MultiDOFJointTrajectory>("/firefly/command/trajectory", 1);
-        gimbal_pub_ = nh4_.advertise<geometry_msgs::Twist>("/firefly/command/gimbal", 1);
+        motion_pub_     = nh_ptr->advertise<trajectory_msgs::MultiDOFJointTrajectory>("/firefly/command/trajectory", 1);
+        gimbal_pub_     = nh_ptr->advertise<geometry_msgs::Twist>("/firefly/command/gimbal", 1);
 
-        map_marker_pub_ = nh5_.advertise<visualization_msgs::MarkerArray>("/firefly/map", 1);
-        path_pub_ = nh5_.advertise<nav_msgs::Path>("/firefly/path_show", 10);
+        map_marker_pub_ = nh_ptr->advertise<visualization_msgs::MarkerArray>("/firefly/map", 1);
+        path_pub_       = nh_ptr->advertise<nav_msgs::Path>("/firefly/path_show", 10);
+    }
 
-        ros::AsyncSpinner spinner1(1, &custom_queue1); // 1 thread for the custom_queue1 // 0 means threads= # of CPU cores
-        ros::AsyncSpinner spinner2(1, &custom_queue2); // 1 thread for the custom_queue2 // 0 means threads= # of CPU cores
-        ros::AsyncSpinner spinner3(1, &custom_queue3); // 1 thread for the custom_queue3 // 0 means threads= # of CPU cores
-        ros::AsyncSpinner spinner4(1, &custom_queue4); // 1 thread for the custom_queue4 // 0 means threads= # of CPU cores
-        ros::AsyncSpinner spinner5(1, &custom_queue5); // 1 thread for the custom_queue5 // 0 means threads= # of CPU cores
+    void MapCallback(const sensor_msgs::PointCloud2ConstPtr &cloud,
+                     const sensor_msgs::PointCloud2ConstPtr &Nbr,
+                     const nav_msgs::OdometryConstPtr &msg)
+    {
 
-        spinner1.start(); // start spinner of the custom queue 1
-        spinner2.start(); // start spinner of the custom queue 2
-        spinner3.start(); // start spinner of the custom queue 3
-        spinner4.start(); // start spinner of the custom queue 4
-        spinner5.start(); // start spinner of the custom queue 5
-
-        ros::waitForShutdown();
+        // ensure the map initialization finished
+        if (!map_initialise)
+        {
+            return;
+        }
+        // ensure time of messages sync
+        if (std::fabs(cloud->header.stamp.toSec() - Nbr->header.stamp.toSec()) > 0.2)
+        {
+            return;
+        }
+        mm.update_map(cloud, Nbr, msg);
     }
 
 private:
-    ros::NodeHandle nh_;  // nodehandle for communication
-    ros::NodeHandle nh2_; // nodehandle for update neibors
-    ros::NodeHandle nh3_; // nodehandle for update map
-    ros::NodeHandle nh4_; // nodehandle for motion
-    ros::NodeHandle nh5_; // nodehandle for visulization
+    ros::NodeHandlePtr nh_ptr;  // nodehandle for communication
 
-    ros::CallbackQueue custom_queue1; // queue hold nh_ that use for communication
-    ros::CallbackQueue custom_queue2; // queue hold nh2_ that use for neibors
-    ros::CallbackQueue custom_queue3; // queue hold nh3_ that use for map
-    ros::CallbackQueue custom_queue4; // queue hold nh4_ that use for motion
-    ros::CallbackQueue custom_queue5; // queue hold nh5_ that use for visulization
-
-    ros::Timer Debug_timer2;
-    ros::Timer Debug_timer3;
-    ros::Timer Debug_timer4;
-    ros::Timer Debug_timer5;
+    ros::Timer TimerProbeNbr;   // To request updates from neighbours
+    ros::Timer TimerPlan;       // To design a trajectory
+    ros::Timer TimerCmdOut;     // To issue control setpoint to unicon
+    ros::Timer TimerViz;        // To vizualize internal states
 
     // callback Q1
     caric_mission::CreatePPComTopic srv; // This PPcom create for communication between neibors;
     ros::ServiceClient client;           // The client to create ppcom
-    ros::Timer Debug_timer;              // Debug Timer
     ros::Publisher communication_pub_;   // PPcom publish com
     bool serviceAvailable = false;       // The flag whether the communication service is ready
     ros::Subscriber task_sub_;
@@ -2837,8 +2827,11 @@ private:
     // callback Q3
     message_filters::Subscriber<sensor_msgs::PointCloud2> *cloud_sub_;
     message_filters::Subscriber<sensor_msgs::PointCloud2> *nbr_sub_;
-    message_filters::Subscriber<nav_msgs::Odometry> *odom_filter_sub_;
-    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::PointCloud2, sensor_msgs::PointCloud2, nav_msgs::Odometry> MySyncPolicy;
+    message_filters::Subscriber<nav_msgs::Odometry>       *odom_filter_sub_;
+    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::PointCloud2,
+                                                            sensor_msgs::PointCloud2,
+                                                            nav_msgs::Odometry> MySyncPolicy;
+    // // boost::shared_ptr<message_filters::Synchronizer<MySyncPolicy>> sync_;
     message_filters::Synchronizer<MySyncPolicy> *sync_;
 
     // callback Q4
@@ -2860,24 +2853,21 @@ private:
 
     void TaskCallback(const std_msgs::String msg)
     {
-        // cout<<nh_.getNamespace()<<"Task begin"<<endl;
-        if (pre_task == msg.data)
+
+        // cout<<nh_ptr->getNamespace()<<"Task begin"<<endl;
+        if (pre_task == msg.data && pre_task != "")
         {
+            map_initialise = true;
             return;
         }
 
-        mm = mainbrain(msg.data, nh_.getNamespace());
+        mm = mainbrain(msg.data, nh_ptr->getNamespace());
         pre_task = msg.data;
         map_initialise = true;
-
-        // cout<<nh_.getNamespace()<<"Task out"<<endl;
     }
 
     void ComCallback(const std_msgs::String msg)
     {
-        // Do some comunication thing
-        // cout<<nh_.getNamespace()<<"com begin"<<endl;
-
         mm.communicate(msg.data);
 
         if (!serviceAvailable || !communication_initialise)
@@ -2912,27 +2902,11 @@ private:
             }
         }
 
-        // cout<<nh_.getNamespace()<<"com end"<<endl;
-    }
-
-    void MapCallback(const sensor_msgs::PointCloud2ConstPtr &cloud, const sensor_msgs::PointCloud2ConstPtr &Nbr, const nav_msgs::OdometryConstPtr &msg)
-    {
-        // ensure the map initialization finished
-        if (!map_initialise)
-        {
-            return;
-        }
-        // ensure time of messages sync
-        if (std::fabs(cloud->header.stamp.toSec() - Nbr->header.stamp.toSec()) > 0.2)
-        {
-            return;
-        }
-
-        mm.update_map(cloud, Nbr, msg);
     }
 
     void OdomCallback(const nav_msgs::OdometryConstPtr &msg)
     {
+
         Eigen::Vector3d my_position = Eigen::Vector3d(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z);
         Eigen::Matrix3d R = Eigen::Quaterniond(msg->pose.pose.orientation.w, msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z).toRotationMatrix();
         mm.update_position(my_position, R);
@@ -2944,7 +2918,7 @@ private:
         mm.update_gimbal(position);
     }
 
-    void Debugtimer(const ros::TimerEvent &)
+    void TimerProbeNbrCB(const ros::TimerEvent &)
     {
         if (!serviceAvailable || !map_initialise)
         {
@@ -2961,7 +2935,7 @@ private:
         }
         return;
     }
-    void Debugtimer2(const ros::TimerEvent &)
+    void TimerPlanCB(const ros::TimerEvent &)
     {
         if (!map_initialise)
         {
@@ -2971,30 +2945,30 @@ private:
 
         return;
     }
-    void Debugtimer3(const ros::TimerEvent &)
-    {
 
-        return;
-    }
-    void Debugtimer4(const ros::TimerEvent &)
+    void TimerCmdOutCB(const ros::TimerEvent &)
     {
         if (!map_initialise)
         {
             return;
         }
+        
         trajectory_msgs::MultiDOFJointTrajectory position_cmd;
         geometry_msgs::Twist gimbal_msg;
+        
         if (mm.get_cmd(position_cmd, gimbal_msg))
         {
             position_cmd.header.stamp = ros::Time::now();
             motion_pub_.publish(position_cmd);
             gimbal_pub_.publish(gimbal_msg);
         }
+
         return;
     }
-    void Debugtimer5(const ros::TimerEvent &)
+    void TimerVizCB(const ros::TimerEvent &)
     {
-        if (!!map_initialise)
+
+        if (!map_initialise)
         {
             return;
         }
