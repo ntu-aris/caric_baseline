@@ -14,7 +14,7 @@
         
         <arg name="namespace"  default="jurong" />
 
-        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" >
 
             <!-- Input topics -->
             <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
@@ -38,7 +38,7 @@
     
         <arg name="namespace"  default="changi" />
 
-        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" output="screen">
 
             <!-- Input topics -->
             <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
@@ -86,7 +86,7 @@
         
         <arg name="namespace"  default="sentosa" />
 
-        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" >
 
             <!-- Input topics -->
             <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
@@ -110,7 +110,7 @@
         
         <arg name="namespace"  default="nanyang" />
 
-        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" >
 
             <!-- Input topics -->
             <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
