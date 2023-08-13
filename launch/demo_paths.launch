@@ -3,322 +3,134 @@
     <arg name="manual_control" default="false" />
 
     <!-- Launch the simulator -->
-    <include file="$(find caric_mission)/launch/run_mbs.launch"/>
+    <include file="$(find caric_mission)/launch/run_mbs.launch" />
     <!-- <include file="$(find caric_mission)/launch/run_hangar.launch"/> -->
     <!-- <include file="$(find caric_mission)/launch/run_crane.launch"/> -->
 
-
-    <!-- <node name="gcs_talker" pkg="caric_demo" type="initial_task" output="screen"  /> -->
+    <!-- Central coordinator -->
     <node name="gcs_talker" pkg="caric_demo" type="initial_task" output="screen" />
+
     <group ns="jurong">
-        <arg name="namespace" default="jurong" />
-        <arg name="odom_topic" default="ground_truth/odometry" />
+        
+        <arg name="namespace"  default="jurong" />
+
         <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
-            <remap from="/cloud_inW"
-                    to="/$(arg namespace)/cloud_inW" />
-            <remap from="/nbr_odom_cloud"
-                    to="/$(arg namespace)/nbr_odom_cloud" />  
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />
-            <remap from="/firefly/map"
-                    to="/$(arg namespace)/map" />
-            <remap from="/firefly/Nbr_mask"
-                    to="/$(arg namespace)/Nbr_mask" />
-            <remap from="/firefly/command/trajectory"
-                    to="/$(arg namespace)/command/trajectory" />
-             <remap from="/firefly/gimbal"
-                    to="/$(arg namespace)/gimbal" />    
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />    
-            <remap from="/ground_truth/odometry"
-                    to="/$(arg namespace)/ground_truth/odometry" />
-            <remap from="/firefly/path_show"
-                    to="/$(arg namespace)/path_show" />
+
+            <!-- Input topics -->
+            <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
+            <remap from="/nbr_odom_cloud"              to="/$(arg namespace)/nbr_odom_cloud" />
+            <remap from="/firefly/gimbal"              to="/$(arg namespace)/gimbal" />
+            <remap from="/ground_truth/odometry"       to="/$(arg namespace)/ground_truth/odometry" />
+
+            <!-- Control outputs -->
+            <remap from="/firefly/command/gimbal"      to="/$(arg namespace)/command/gimbal" />
+            <remap from="/firefly/command/trajectory"  to="/$(arg namespace)/command/trajectory" />
+
+            <!-- Vizualization -->
+            <remap from="/firefly/map"                 to="/$(arg namespace)/map" />
+            <remap from="/firefly/Nbr_mask"            to="/$(arg namespace)/Nbr_mask" />
+            <remap from="/firefly/path_show"           to="/$(arg namespace)/path_show" />
         </node>
+
     </group>
 
     <group ns="changi">
-
-        <arg name="namespace" default="changi" />
-        <arg name="odom_topic" default="ground_truth/odometry" />
+    
+        <arg name="namespace"  default="changi" />
 
         <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
-            <remap from="/cloud_inW"
-                    to="/$(arg namespace)/cloud_inW" />
-            <remap from="/nbr_odom_cloud"
-                    to="/$(arg namespace)/nbr_odom_cloud" />  
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />
-            <remap from="/firefly/map"
-                    to="/$(arg namespace)/map" />
-            <remap from="/firefly/Nbr_mask"
-                    to="/$(arg namespace)/Nbr_mask" />
-            <remap from="/firefly/command/trajectory"
-                    to="/$(arg namespace)/command/trajectory" />
-             <remap from="/firefly/gimbal"
-                    to="/$(arg namespace)/gimbal" />    
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />    
-            <remap from="/ground_truth/odometry"
-                    to="/$(arg namespace)/ground_truth/odometry" />
-            <remap from="/firefly/path_show"
-                    to="/$(arg namespace)/path_show" />
+
+            <!-- Input topics -->
+            <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
+            <remap from="/nbr_odom_cloud"              to="/$(arg namespace)/nbr_odom_cloud" />
+            <remap from="/firefly/gimbal"              to="/$(arg namespace)/gimbal" />
+            <remap from="/ground_truth/odometry"       to="/$(arg namespace)/ground_truth/odometry" />
+
+            <!-- Control outputs -->
+            <remap from="/firefly/command/gimbal"      to="/$(arg namespace)/command/gimbal" />
+            <remap from="/firefly/command/trajectory"  to="/$(arg namespace)/command/trajectory" />
+
+            <!-- Vizualization -->
+            <remap from="/firefly/map"                 to="/$(arg namespace)/map" />
+            <remap from="/firefly/Nbr_mask"            to="/$(arg namespace)/Nbr_mask" />
+            <remap from="/firefly/path_show"           to="/$(arg namespace)/path_show" />
         </node>
 
     </group>
-
-    <group ns="nanyang">
-
-        <arg name="namespace" default="nanyang" />
-        <arg name="odom_topic" default="ground_truth/odometry" />
-
-        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
-            <remap from="/cloud_inW"
-                    to="/$(arg namespace)/cloud_inW" />
-            <remap from="/nbr_odom_cloud"
-                    to="/$(arg namespace)/nbr_odom_cloud" />  
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />
-            <remap from="/firefly/map"
-                    to="/$(arg namespace)/map" />
-            <remap from="/firefly/Nbr_mask"
-                    to="/$(arg namespace)/Nbr_mask" />
-            <remap from="/firefly/command/trajectory"
-                    to="/$(arg namespace)/command/trajectory" />
-             <remap from="/firefly/gimbal"
-                    to="/$(arg namespace)/gimbal" />    
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />    
-            <remap from="/ground_truth/odometry"
-                    to="/$(arg namespace)/ground_truth/odometry" />
-            <remap from="/firefly/path_show"
-                    to="/$(arg namespace)/path_show" />
-        </node>
-
-    </group>
-
+    
     <group ns="raffles">
-
-        <arg name="namespace" default="raffles" />
-        <arg name="odom_topic" default="ground_truth/odometry" />
+        
+        <arg name="namespace"  default="raffles" />
 
         <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
-            <remap from="/cloud_inW"
-                    to="/$(arg namespace)/cloud_inW" />
-            <remap from="/nbr_odom_cloud"
-                    to="/$(arg namespace)/nbr_odom_cloud" />  
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />
-            <remap from="/firefly/map"
-                    to="/$(arg namespace)/map" />
-            <remap from="/firefly/Nbr_mask"
-                    to="/$(arg namespace)/Nbr_mask" />
-            <remap from="/firefly/command/trajectory"
-                    to="/$(arg namespace)/command/trajectory" />
-             <remap from="/firefly/gimbal"
-                    to="/$(arg namespace)/gimbal" />    
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />    
-            <remap from="/ground_truth/odometry"
-                    to="/$(arg namespace)/ground_truth/odometry" />
-            <remap from="/firefly/path_show"
-                    to="/$(arg namespace)/path_show" />
+
+            <!-- Input topics -->
+            <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
+            <remap from="/nbr_odom_cloud"              to="/$(arg namespace)/nbr_odom_cloud" />
+            <remap from="/firefly/gimbal"              to="/$(arg namespace)/gimbal" />
+            <remap from="/ground_truth/odometry"       to="/$(arg namespace)/ground_truth/odometry" />
+
+            <!-- Control outputs -->
+            <remap from="/firefly/command/gimbal"      to="/$(arg namespace)/command/gimbal" />
+            <remap from="/firefly/command/trajectory"  to="/$(arg namespace)/command/trajectory" />
+
+            <!-- Vizualization -->
+            <remap from="/firefly/map"                 to="/$(arg namespace)/map" />
+            <remap from="/firefly/Nbr_mask"            to="/$(arg namespace)/Nbr_mask" />
+            <remap from="/firefly/path_show"           to="/$(arg namespace)/path_show" />
         </node>
 
     </group>
 
-
     <group ns="sentosa">
-
-        <arg name="namespace" default="sentosa" />
-        <arg name="odom_topic" default="ground_truth/odometry" />
+        
+        <arg name="namespace"  default="sentosa" />
 
         <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
-            <remap from="/cloud_inW"
-                    to="/$(arg namespace)/cloud_inW" />
-            <remap from="/nbr_odom_cloud"
-                    to="/$(arg namespace)/nbr_odom_cloud" />  
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />
-            <remap from="/firefly/map"
-                    to="/$(arg namespace)/map" />
-            <remap from="/firefly/Nbr_mask"
-                    to="/$(arg namespace)/Nbr_mask" />
-            <remap from="/firefly/command/trajectory"
-                    to="/$(arg namespace)/command/trajectory" />
-             <remap from="/firefly/gimbal"
-                    to="/$(arg namespace)/gimbal" />    
-            <remap from="/firefly/command/gimbal"
-                    to="/$(arg namespace)/command/gimbal" />    
-            <remap from="/ground_truth/odometry"
-                    to="/$(arg namespace)/ground_truth/odometry" />
-            <remap from="/firefly/path_show"
-                    to="/$(arg namespace)/path_show" />
+
+            <!-- Input topics -->
+            <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
+            <remap from="/nbr_odom_cloud"              to="/$(arg namespace)/nbr_odom_cloud" />
+            <remap from="/firefly/gimbal"              to="/$(arg namespace)/gimbal" />
+            <remap from="/ground_truth/odometry"       to="/$(arg namespace)/ground_truth/odometry" />
+
+            <!-- Control outputs -->
+            <remap from="/firefly/command/gimbal"      to="/$(arg namespace)/command/gimbal" />
+            <remap from="/firefly/command/trajectory"  to="/$(arg namespace)/command/trajectory" />
+
+            <!-- Vizualization -->
+            <remap from="/firefly/map"                 to="/$(arg namespace)/map" />
+            <remap from="/firefly/Nbr_mask"            to="/$(arg namespace)/Nbr_mask" />
+            <remap from="/firefly/path_show"           to="/$(arg namespace)/path_show" />
         </node>
 
     </group>
-
-    <!-- <group ns="raffles">
-
-        <arg name="namespace" default="raffles" />
-        <arg name="odom_topic" default="ground_truth/odometry" />
-
-        <group if="$(eval arg('manual_control') == true)">
-
-            <node name="key_joystick" pkg="rotors_joy_interface" type="key_joystick.py" />
-            <node name="joy_node" pkg="joy" type="joy_node" />
-            <node name="rotors_joy_control_interface" pkg="rotors_joy_interface" type="rotors_joy_control_interface" output="screen">
-                <remap from="/ground_truth/odometry"
-                       to="/$(arg namespace)/$(arg odom_topic)" />
-                <remap from="/firefly/command/trajectory"
-                       to="/$(arg namespace)/command/trajectory" />  
-                <remap from="/firefly/command/gimbal"
-                       to="/$(arg namespace)/command/gimbal" />       
-            </node>
-
-        </group>
-
-        <group if="$(eval arg('manual_control') == false)">
-            
-            <node respawn="false" pkg="traj_gennav" type="traj_gennav_node" name="traj_gennav" output="screen">
-            
-                <param name="frame_id"          type="string" value="world" />
-                <param name="desired_distance"  type="double" value="2.0" />
-                <param name="path_from_message" type="bool"   value="true" />
-                <param name="sim_type"          type="string" value="none" />
-                
-                <rosparam file="$(find caric_mission)/demo_paths/demo_path_$(arg namespace).yaml"/>
-                <remap from="/vins_estimator/odometry"
-                       to="/$(arg namespace)/$(arg odom_topic)" />
-                <remap from="/firefly/command/trajectory"
-                       to="/$(arg namespace)/command/trajectory" />
-            </node>
-
-        </group>
-
-    </group>
-
-    <group ns="sentosa">
-
-        <arg name="namespace" default="sentosa" />
-        <arg name="odom_topic" default="ground_truth/odometry" />
-
-        <group if="$(eval arg('manual_control') == true)">
-
-            <node name="key_joystick" pkg="rotors_joy_interface" type="key_joystick.py" />
-            <node name="joy_node" pkg="joy" type="joy_node" />
-            <node name="rotors_joy_control_interface" pkg="rotors_joy_interface" type="rotors_joy_control_interface" output="screen">
-                <remap from="/ground_truth/odometry"
-                       to="/$(arg namespace)/$(arg odom_topic)" />
-                <remap from="/firefly/command/trajectory"
-                       to="/$(arg namespace)/command/trajectory" />  
-                <remap from="/firefly/command/gimbal"
-                       to="/$(arg namespace)/command/gimbal" />       
-            </node>
-
-        </group>
-
-        <group if="$(eval arg('manual_control') == false)">
-            
-            <node respawn="false" pkg="traj_gennav" type="traj_gennav_node" name="traj_gennav" output="screen">
-            
-                <param name="frame_id"          type="string" value="world" />
-                <param name="desired_distance"  type="double" value="2.0" />
-                <param name="path_from_message" type="bool"   value="true" />
-                <param name="sim_type"          type="string" value="none" />
-                
-                <rosparam file="$(find caric_mission)/demo_paths/demo_path_$(arg namespace).yaml"/>
-                <remap from="/vins_estimator/odometry"
-                       to="/$(arg namespace)/$(arg odom_topic)" />
-                <remap from="/firefly/command/trajectory"
-                       to="/$(arg namespace)/command/trajectory" />
-            </node>
-
-        </group>
-
-    </group>
-
-    <group ns="changi">
-
-        <arg name="namespace" default="changi" />
-        <arg name="odom_topic" default="ground_truth/odometry" />
-
-        <group if="$(eval arg('manual_control') == true)">
-
-            <node name="key_joystick" pkg="rotors_joy_interface" type="key_joystick.py" />
-            <node name="joy_node" pkg="joy" type="joy_node" />
-            <node name="rotors_joy_control_interface" pkg="rotors_joy_interface" type="rotors_joy_control_interface" output="screen">
-                <remap from="/ground_truth/odometry"
-                       to="/$(arg namespace)/$(arg odom_topic)" />
-                <remap from="/firefly/command/trajectory"
-                       to="/$(arg namespace)/command/trajectory" />  
-                <remap from="/firefly/command/gimbal"
-                       to="/$(arg namespace)/command/gimbal" />       
-            </node>
-
-        </group>
-
-        <group if="$(eval arg('manual_control') == false)">
-            
-            <node respawn="false" pkg="traj_gennav" type="traj_gennav_node" name="traj_gennav" output="screen">
-            
-                <param name="frame_id"          type="string" value="world" />
-                <param name="desired_distance"  type="double" value="2.0" />
-                <param name="path_from_message" type="bool"   value="true" />
-                <param name="sim_type"          type="string" value="none" />
-                
-                <rosparam file="$(find caric_mission)/demo_paths/demo_path_$(arg namespace).yaml"/>
-                <remap from="/vins_estimator/odometry"
-                       to="/$(arg namespace)/$(arg odom_topic)" />
-                <remap from="/firefly/command/trajectory"
-                       to="/$(arg namespace)/command/trajectory" />
-            </node>
-
-        </group>
-
-    </group>
-
+    
     <group ns="nanyang">
+        
+        <arg name="namespace"  default="nanyang" />
 
-        <arg name="namespace" default="nanyang" />
-        <arg name="odom_topic" default="ground_truth/odometry" />
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
 
-        <group if="$(eval arg('manual_control') == true)">
+            <!-- Input topics -->
+            <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
+            <remap from="/nbr_odom_cloud"              to="/$(arg namespace)/nbr_odom_cloud" />
+            <remap from="/firefly/gimbal"              to="/$(arg namespace)/gimbal" />
+            <remap from="/ground_truth/odometry"       to="/$(arg namespace)/ground_truth/odometry" />
 
-            <node name="key_joystick" pkg="rotors_joy_interface" type="key_joystick.py" />
-            <node name="joy_node" pkg="joy" type="joy_node" />
-            <node name="rotors_joy_control_interface" pkg="rotors_joy_interface" type="rotors_joy_control_interface" output="screen">
-                <remap from="/ground_truth/odometry"
-                       to="/$(arg namespace)/$(arg odom_topic)" />
-                <remap from="/firefly/command/trajectory"
-                       to="/$(arg namespace)/command/trajectory" />  
-                <remap from="/firefly/command/gimbal"
-                       to="/$(arg namespace)/command/gimbal" />       
-            </node>
+            <!-- Control outputs -->
+            <remap from="/firefly/command/gimbal"      to="/$(arg namespace)/command/gimbal" />
+            <remap from="/firefly/command/trajectory"  to="/$(arg namespace)/command/trajectory" />
 
-        </group>
+            <!-- Vizualization -->
+            <remap from="/firefly/map"                 to="/$(arg namespace)/map" />
+            <remap from="/firefly/Nbr_mask"            to="/$(arg namespace)/Nbr_mask" />
+            <remap from="/firefly/path_show"           to="/$(arg namespace)/path_show" />
+        </node>
 
-        <group if="$(eval arg('manual_control') == false)">
-            
-            <node respawn="false" pkg="traj_gennav" type="traj_gennav_node" name="traj_gennav" output="screen">
-            
-                <param name="frame_id"          type="string" value="world" />
-                <param name="desired_distance"  type="double" value="2.0" />
-                <param name="path_from_message" type="bool"   value="true" />
-                <param name="sim_type"          type="string" value="none" />
-                
-                <rosparam file="$(find caric_mission)/demo_paths/demo_path_$(arg namespace).yaml"/>
-                <remap from="/vins_estimator/odometry"
-                       to="/$(arg namespace)/$(arg odom_topic)" />
-                <remap from="/firefly/command/trajectory"
-                       to="/$(arg namespace)/command/trajectory" />
-            </node>
-
-        </group>
-
-    </group> -->
-
+    </group>
+    
     <!-- For visualization -->
-    <node name="odom2tf" pkg="caric_mission" type="odom2tf.py" output="screen"/>
+    <node name="odom2tf" pkg="caric_mission" type="odom2tf.py" output="screen" />
 
 </launch>
