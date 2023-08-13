@@ -1,4 +1,4 @@
-#include "xxh_package.h"
+#include "caric_demo.h"
 
 Agent::Agent(int dimx,int dimy,int dimz,Eigen::Vector3d& origin,double safed):global_map(dimx,dimy,dimz,origin,safed),nh_()//,
                                                                             // cloud_sub_(nh_, "/cloud_inW", 10)//,
@@ -213,7 +213,7 @@ void Agent::TimerCallback(const ros::TimerEvent &){
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "xxh_package");
+    ros::init(argc, argv, "caric_demo");
     ros::NodeHandle nh_init();
 
     // yolo();

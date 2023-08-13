@@ -8,12 +8,12 @@
     <!-- <include file="$(find caric_mission)/launch/run_crane.launch"/> -->
 
 
-    <!-- <node name="gcs_talker" pkg="xxh_package" type="xxh_initial_task" output="screen"  /> -->
-    <node name="gcs_talker" pkg="xxh_package" type="xxh_initial_task" output="screen" />
+    <!-- <node name="gcs_talker" pkg="caric_demo" type="initial_task" output="screen"  /> -->
+    <node name="gcs_talker" pkg="caric_demo" type="initial_task" output="screen" />
     <group ns="jurong">
         <arg name="namespace" default="jurong" />
         <arg name="odom_topic" default="ground_truth/odometry" />
-        <node name="baseline_planner" pkg="xxh_package" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
             <remap from="/cloud_inW"
                     to="/$(arg namespace)/cloud_inW" />
             <remap from="/nbr_odom_cloud"
@@ -42,7 +42,7 @@
         <arg name="namespace" default="changi" />
         <arg name="odom_topic" default="ground_truth/odometry" />
 
-        <node name="baseline_planner" pkg="xxh_package" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
             <remap from="/cloud_inW"
                     to="/$(arg namespace)/cloud_inW" />
             <remap from="/nbr_odom_cloud"
@@ -72,7 +72,7 @@
         <arg name="namespace" default="nanyang" />
         <arg name="odom_topic" default="ground_truth/odometry" />
 
-        <node name="baseline_planner" pkg="xxh_package" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
             <remap from="/cloud_inW"
                     to="/$(arg namespace)/cloud_inW" />
             <remap from="/nbr_odom_cloud"
@@ -102,7 +102,7 @@
         <arg name="namespace" default="raffles" />
         <arg name="odom_topic" default="ground_truth/odometry" />
 
-        <node name="baseline_planner" pkg="xxh_package" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
             <remap from="/cloud_inW"
                     to="/$(arg namespace)/cloud_inW" />
             <remap from="/nbr_odom_cloud"
@@ -133,7 +133,7 @@
         <arg name="namespace" default="sentosa" />
         <arg name="odom_topic" default="ground_truth/odometry" />
 
-        <node name="baseline_planner" pkg="xxh_package" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
+        <node name="baseline_planner" pkg="caric_demo" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'">
             <remap from="/cloud_inW"
                     to="/$(arg namespace)/cloud_inW" />
             <remap from="/nbr_odom_cloud"

@@ -31,7 +31,7 @@
 #include <caric_mission/CreatePPComTopic.h>
 #include <std_msgs/String.h>
 
-#include "xxh_initial_task.h"
+#include "initial_task.h"
 #include "Astar.h"
 #include <map>
 struct agent_local{
