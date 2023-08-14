@@ -3,8 +3,8 @@
     <arg name="manual_control" default="false" />
 
     <!-- Launch the simulator -->
-    <include file="$(find caric_mission)/launch/run_mbs.launch" />
-    <!-- <include file="$(find caric_mission)/launch/run_hangar.launch"/> -->
+    <!-- <include file="$(find caric_mission)/launch/run_mbs.launch" /> -->
+    <include file="$(find caric_mission)/launch/run_hangar.launch"/>
     <!-- <include file="$(find caric_mission)/launch/run_crane.launch"/> -->
 
     <!-- Central coordinator -->
