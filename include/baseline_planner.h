@@ -2868,6 +2868,11 @@ private:
 
     void ComCallback(const std_msgs::String msg)
     {
+        if(!map_initialise)
+        {
+            return;
+        }
+
         mm.communicate(msg.data);
 
         if (!serviceAvailable || !communication_initialise)
@@ -2906,6 +2911,10 @@ private:
 
     void OdomCallback(const nav_msgs::OdometryConstPtr &msg)
     {
+        if(!map_initialise)
+        {
+            return;
+        }
 
         Eigen::Vector3d my_position = Eigen::Vector3d(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z);
         Eigen::Matrix3d R = Eigen::Quaterniond(msg->pose.pose.orientation.w, msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z).toRotationMatrix();
@@ -2914,6 +2923,10 @@ private:
 
     void GimbalCallback(const geometry_msgs::TwistStamped &msg)
     {
+        if(!map_initialise)
+        {
+            return;
+        }
         Eigen::Vector3d position = Eigen::Vector3d(msg.twist.linear.x, msg.twist.linear.y, msg.twist.linear.z);
         mm.update_gimbal(position);
     }
