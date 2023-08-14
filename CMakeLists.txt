@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(caric_demo)
+project(caric_baseline)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -35,7 +35,7 @@ include_directories(${OCTOMAP_INCLUDE_DIRS})
 catkin_package(
   # caric_mission
 #  INCLUDE_DIRS include
-#  LIBRARIES caric_demo
+#  LIBRARIES caric_baseline
 #  CATKIN_DEPENDS rospy std_msgs
 #  DEPENDS system_lib
 )
