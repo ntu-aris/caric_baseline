@@ -116,7 +116,6 @@ public:
     {
         string name;
         getline(str, name, ';');
-        // cout<<"name"<<name<<endl;
         if (name != "/jurong" && name != "/raffles" && name != "/changi" && name != "sentosa" && name != "/nanyang")
         {
             return;
@@ -377,8 +376,13 @@ public:
         if (now_position_index != index && visited_map[index.x()][index.y()][index.z()] == 0 && search_direction.empty())
         {
             search_direction = get_search_target(index);
+            time_start=ros::Time::now().toSec();
         }
         if (search_direction.empty())
+        {
+            visited_map[index.x()][index.y()][index.z()] = 1;
+        }
+        if(fabs(ros::Time::now().toSec()-time_start)>3)
         {
             visited_map[index.x()][index.y()][index.z()] = 1;
         }
@@ -573,7 +577,7 @@ public:
             }
             else
             {
-                if (fabs(ros::Time::now().toSec() - local_dict[name].time) < 1)
+                if (fabs(ros::Time::now().toSec() - local_dict[name].time) < 1||true)
                 {
                     if (local_dict[name].in_bounding_box)
                     {
@@ -847,19 +851,23 @@ public:
         if (mystate == 3)
         {
             // cout<<"mystate:"<<mystate<<endl;
+            // return true;
         }
         if (mystate != 3)
         {
             return false;
         }
         else
-        {
+        { 
             for (auto &name : follower)
             {
                 if (local_dict[name].state != 0)
                 {
                     return false;
                 }
+            }
+            if(follower.size()==0&&mystate!=3){
+                return false;
             }
         }
         return true;
@@ -911,6 +919,7 @@ public:
     
     void exploration(string myname)
     {
+       ////yolo();
         for (int i = 0; i < finish_flag.size(); i++)
         {
             if (finish_flag[i] == 0)
@@ -937,6 +946,14 @@ public:
             }
             task_id = i;
         }
+        if(follower.size()==0){
+            //yolo();
+            take_photo_layer(0, map_shape.z()-1, myname);
+            //yolo();
+            return;
+        }
+
+
         if (task_id == 0)
         {
             take_photo_layer(0, region_slice_layer[0], myname);
@@ -963,10 +980,14 @@ public:
         {
             if (finish_flag_leader)
             {
+
             }
             else
             {
                 bool tamp = true;
+                if(follower.size()==0){
+                    tamp=false;
+                }
                 for (auto &name : follower)
                 {
                     if (local_dict[name].state != 2)
@@ -1003,7 +1024,7 @@ public:
         path_index_temp = Dijkstra_search_2D_with_3D(height, high - 1, myname);
         if (path_index_temp.empty())
         {
-            if (myname == "/raffles" || myname == "jurong")
+            if (myname == "/raffles" || myname == "/jurong")
             {
                 height += 4;
             }
@@ -1132,7 +1153,7 @@ public:
     {
         string name;
         getline(str, name, ';');
-        if (name != "/jurong" && name != "/raffles" && name != "/changi" && name != "sentosa" && name != "/nanyang")
+        if (name != "/jurong" && name != "/raffles" && name != "/changi" && name != "/sentosa" && name != "/nanyang")
         {
             return;
         }
@@ -1143,7 +1164,7 @@ public:
             agent_local info_temp;
             // cout<<"position_str:"<<position_str<<endl;
             Eigen::Vector3d global_nbr_position_point = str2point(position_str);
-            if (!out_of_range(global_nbr_position_point, false))
+            if (!out_of_range_global(global_nbr_position_point, false))
             {
                 info_temp.in_bounding_box = true;
                 info_temp.position_index = get_index(global_nbr_position_point);
@@ -1152,7 +1173,7 @@ public:
             getline(str, path_point, ';');
             // cout<<"path_point:"<<path_point<<endl;
             Eigen::Vector3d next_nbr_path_po = str2point(path_point);
-            if (!out_of_range(next_nbr_path_po, false))
+            if (!out_of_range_global(next_nbr_path_po, false))
             {
                 info_temp.planning_in_bounding_box = true;
                 info_temp.planning_index = get_index(next_nbr_path_po);
@@ -1192,6 +1213,7 @@ private:
     int team_size;
     bool is_finished = false;
     AStar astar_planner;
+    double time_start=0;
 
     bool init_task_id = false;
     int task_id = 0;
@@ -1311,6 +1333,32 @@ private:
             return false;
         }
     }
+
+        // Function whether a local point is out of range
+    bool out_of_range_global(Eigen::Vector3d point_in, bool out_put)
+    {
+        Eigen::Vector3d point=rotation_matrix*(point_in-map_global_center);
+        if (fabs(point.x()) > (fabs(map_shape.x() / 2) + 0.5) * grid_size.x() || fabs(point.y()) > (fabs(map_shape.y() / 2) + 0.5) * grid_size.y() || fabs(point.z()) > (fabs(map_shape.z() / 2) + 0.5) * grid_size.z())
+        {
+            if (out_put)
+            {
+                cout << "xbool:" << (fabs(point.x()) > fabs(map_shape.x() / 2) * grid_size.x() ? "yes" : "no") << endl;
+                cout << "xlim:" << fabs(map_shape.x() / 2) * grid_size.x() << endl;
+                cout << "ylim:" << fabs(map_shape.y() / 2) * grid_size.y() << endl;
+                cout << "grid size:" << grid_size.transpose() << endl;
+                cout << "map_shape:" << map_shape.transpose() << endl;
+                cout << "center:" << map_index_center.transpose() << endl;
+                cout << "out range point" << point.transpose() << endl;
+                cout << "Desired point" << (rotation_matrix * (get_grid_center_global(Eigen::Vector3i(0, 0, 0)) - map_global_center)).transpose() << endl;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     // Function whether a local point_index is out of range
     bool out_of_range_index(Eigen::Vector3i point)
     {
@@ -1404,16 +1452,18 @@ private:
             }
             else
             {
-                if (fabs(ros::Time::now().toSec() - local_dict[name].time) < 1)
+                if (fabs(ros::Time::now().toSec() - local_dict[name].time) < 1||true)
                 {
                     if (local_dict[name].in_bounding_box)
                     {
                         Eigen::Vector3i tar = local_dict[name].position_index;
+                        // cout<<"position"<<tar.transpose()<<endl;
                         grid[tar.x()][tar.y()][tar.z()] = 1;
                     }
                     if (local_dict[name].planning_in_bounding_box)
                     {
                         Eigen::Vector3i tar = local_dict[name].planning_index;
+                        // cout<<"motion"<<tar.transpose()<<endl;
                         grid[tar.x()][tar.y()][tar.z()] = 1;
                     }
                 }
@@ -1444,7 +1494,7 @@ private:
                 int nextRow = curr.x() + dir.x();
                 int nextCol = curr.y() + dir.y();
                 int nextHeight = curr.z() + dir.z();
-                if (isValidMove(nextRow, nextCol, nextHeight) && !visited[nextRow][nextCol][nextHeight] && nextHeight <= upper)
+                if (isValidMove(nextRow, nextCol, nextHeight,grid) && !visited[nextRow][nextCol][nextHeight] && nextHeight <= upper)
                 {
                     list<Vector3i> newPath = path;
                     newPath.push_back(Vector3i(nextRow, nextCol, nextHeight));
@@ -1468,15 +1518,18 @@ private:
             }
             else
             {
-                if (fabs(ros::Time::now().toSec() - local_dict[name].time) < 1)
+                if (fabs(ros::Time::now().toSec() - local_dict[name].time) < 1||true)
                 {
+                    // cout<<"name:"<<name<<endl;
                     if (local_dict[name].in_bounding_box)
                     {
+                        // cout<<"pos insert"<<endl;
                         Eigen::Vector3i tar = local_dict[name].position_index;
                         grid[tar.x()][tar.y()][tar.z()] = 1;
                     }
                     if (local_dict[name].planning_in_bounding_box)
                     {
+                        // cout<<"motion insert"<<endl;
                         Eigen::Vector3i tar = local_dict[name].planning_index;
                         grid[tar.x()][tar.y()][tar.z()] = 1;
                     }
@@ -1508,7 +1561,7 @@ private:
                 int nextRow = curr.x() + dir.x();
                 int nextCol = curr.y() + dir.y();
                 int nextHeight = curr.z() + dir.z();
-                if (isValidMove(nextRow, nextCol, nextHeight) && !visited[nextRow][nextCol][nextHeight] && nextHeight <= upper)
+                if (isValidMove(nextRow, nextCol, nextHeight,grid) && !visited[nextRow][nextCol][nextHeight] && nextHeight <= upper)
                 {
                     list<Vector3i> newPath = path;
                     newPath.push_back(Vector3i(nextRow, nextCol, nextHeight));
@@ -1531,8 +1584,8 @@ private:
             }
             else
             {
-                if (fabs(ros::Time::now().toSec() - local_dict[name].time) < 1)
-                {
+                if (fabs(ros::Time::now().toSec() - local_dict[name].time) < 1||true)
+                {   
                     if (local_dict[name].in_bounding_box)
                     {
                         Eigen::Vector3i tar = local_dict[name].position_index;
@@ -1571,7 +1624,7 @@ private:
                 int nextRow = curr.x() + dir.x();
                 int nextCol = curr.y() + dir.y();
                 int nextHeight = curr.z() + dir.z();
-                if (isValidMove(nextRow, nextCol, nextHeight) && !visited[nextRow][nextCol][nextHeight] && nextHeight <= upper && nextHeight >= lower)
+                if (isValidMove(nextRow, nextCol, nextHeight,grid) && !visited[nextRow][nextCol][nextHeight] && nextHeight <= upper && nextHeight >= lower)
                 {
                     list<Vector3i> newPath = path;
                     newPath.push_back(Vector3i(nextRow, nextCol, nextHeight));
@@ -1602,6 +1655,25 @@ private:
             return false;
         }
     }
+    bool isValidMove(int x,int y,int z,vector<vector<vector<int>>> grid)
+    {
+        if (x >= 0 && x < map_shape.x() && y >= 0 && y < map_shape.y() && z < map_shape.z() && z >= 0)
+        {
+            if (grid[x][y][z] == 1)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }    
+
     void generate_the_global_path()
     {
         list<Eigen::Vector3i> path_tamp(path_index);
@@ -1956,16 +2028,15 @@ public:
         {
             // fly home
             if (is_leader)
-            {
+            {   
                 state = 0;
-
                 bool flag = false;
                 global_map.Astar_local(initial_position, namespace_, info_mannager.get_leader(), flag, true);
                 get_way_point = update_target_waypoint();
                 path_show = global_map.get_path_show();
                 if (flag)
                 {
-                    initial_position.z() += 2;
+                    initial_position.z()= initial_position.z()+2;
                 }
                 return;
             }
@@ -2020,6 +2091,7 @@ public:
         {
             if (namespace_ == "/jurong" || namespace_ == "/raffles")
             {
+               ////yolo();
                 Eigen::Vector3d target = map_set[now_id].get_fly_in_point_global();
                 bool flag = false;
                 global_map.Astar_local(target, namespace_, info_mannager.get_leader(), flag, false);
@@ -2032,6 +2104,7 @@ public:
                     map_set[now_id].set_state(1);
                     state = map_set[now_id].get_state();
                 }
+               ////yolo();
             }
             else
             {
@@ -2070,11 +2143,18 @@ public:
                 }
                 else
                 {
+                    Eigen::Vector3d target = map_set[now_id].get_fly_in_point_global();
                     bool flag = false;
-                    global_map.Astar_photo(now_global_position, namespace_, flag);
+                    global_map.Astar_photo(target, namespace_, flag);
                     get_way_point = update_target_waypoint();
                     path_show = global_map.get_path_show();
                     return;
+                    // bool flag = false;
+                    // global_map.Astar_photo(now_global_position, namespace_, flag);
+                    // get_way_point = update_target_waypoint();
+                    // path_show = global_map.get_path_show();
+                    // return;
+
                 }
             }
         }
@@ -2082,11 +2162,12 @@ public:
         {
             if (namespace_ == "/jurong" || namespace_ == "/raffles")
             {
+               ////yolo();
                 state = map_set[now_id].get_state_leader();
-                // cout<<"leader_state:"<<state<<endl;
                 map_set[now_id].exploration(namespace_);
                 path_show = map_set[now_id].get_path_show();
                 get_way_point = update_target_waypoint();
+               ////yolo();
                 if (map_set[now_id].get_whether_pop())
                 {
                     now_id++;
@@ -2303,7 +2384,7 @@ public:
             if (map_set.size() > now_id)
             {
                 global_map.update_local_dict(global_po_str);
-                map_set[now_id].update_local_dict(global_po_str);
+                map_set[now_id].update_local_dict(local_po_str);
             }
             else
             {
@@ -2439,6 +2520,7 @@ public:
             if (stoi(target_team) == Teamid)
             {
                 // insert map_front from string
+                // not develop this function now
             }
             else
             {
@@ -2691,9 +2773,7 @@ private:
     }
     Eigen::Vector3d Rot2rpy(Eigen::Matrix3d R)
     {
-        // Eigen::Vector3d euler_angles=R.eulerAngles(2,1,0);
-        // Eigen:;Vector3d result(euler_angles.z(),euler_angles.y(),euler_angles.x());
-        // return result;
+
         Eigen::Vector3d n = R.col(0);
         Eigen::Vector3d o = R.col(1);
         Eigen::Vector3d a = R.col(2);
@@ -2744,7 +2824,7 @@ public:
         TimerViz      = nh_ptr->createTimer(ros::Duration(1.0 / 1.0),  &Agent::TimerVizCB,      this);
 
         task_sub_ = nh_ptr->subscribe("/task_assign" + nh_ptr->getNamespace(), 10, &Agent::TaskCallback, this);
-        com_sub_  = nh_ptr->subscribe("/broadcast" + nh_ptr->getNamespace(), 1, &Agent::ComCallback, this);
+        com_sub_  = nh_ptr->subscribe("/broadcast" + nh_ptr->getNamespace(), 10, &Agent::ComCallback, this);
         client    = nh_ptr->serviceClient<caric_mission::CreatePPComTopic>("/create_ppcom_topic");
         communication_pub_ = nh_ptr->advertise<std_msgs::String>("/broadcast", 10);
 
@@ -2872,9 +2952,7 @@ private:
         {
             return;
         }
-
         mm.communicate(msg.data);
-
         if (!serviceAvailable || !communication_initialise)
         {
             return;
@@ -2913,6 +2991,13 @@ private:
     {
         if(!map_initialise)
         {
+            Eigen::Vector3d initial_position = Eigen::Vector3d(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z);
+            std_msgs::String init_position_msg;
+            init_position_msg.data="init_pos;"+nh_ptr->getNamespace()+";"+to_string(initial_position.x())+","+to_string(initial_position.y())+","+to_string(initial_position.z());
+            if(communication_initialise)
+            {
+                communication_pub_.publish(init_position_msg);
+            }
             return;
         }
 
@@ -2954,8 +3039,9 @@ private:
         {
             return;
         }
+       ////yolo();
         mm.replan();
-
+       ////yolo();
         return;
     }
 

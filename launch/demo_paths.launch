@@ -8,13 +8,14 @@
     <!-- <include file="$(find caric_mission)/launch/run_crane.launch"/> -->
 
     <!-- Central coordinator -->
-    <node name="gcs_talker" pkg="caric_baseline" type="initial_task"  />
+    <node name="gcs_task" pkg="caric_baseline" output="screen" type="gcs_task"  />
+    <!-- <node name="gcs_talker" pkg="caric_baseline" type="initial_task"  /> -->
 
     <group ns="jurong">
         
         <arg name="namespace"  default="jurong" />
 
-        <node name="baseline_planner" pkg="caric_baseline" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" output="screen" >
+        <node name="baseline_planner" pkg="caric_baseline" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" >
 
             <!-- Input topics -->
             <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />
@@ -62,7 +63,7 @@
         
         <arg name="namespace"  default="raffles" />
 
-        <node name="baseline_planner" pkg="caric_baseline" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" >
+        <node name="baseline_planner" pkg="caric_baseline" type="baseline_planner" launch-prefix="bash -c 'sleep 5; $0 $@'" output="screen" >
             
             <!-- Input topics -->
             <remap from="/cloud_inW"                   to="/$(arg namespace)/cloud_inW" />

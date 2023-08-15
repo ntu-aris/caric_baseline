@@ -48,10 +48,12 @@ include_directories(
   ${caric_mission_INCLUDE_DIRS}
 )
 
-add_executable(initial_task src/initial_task.cpp)
 add_executable(baseline_planner src/baseline_planner.cpp)
+add_executable(gcs_task src/general_task_initial.cpp)
 
-target_link_libraries(initial_task ${catkin_LIBRARIES} ${OpenMP_CXX_FLAGS})
-target_link_libraries(initial_task ${OCTOMAP_LIBRARIES})
+
 target_link_libraries(baseline_planner ${catkin_LIBRARIES} ${OpenMP_CXX_FLAGS})
 target_link_libraries(baseline_planner ${OCTOMAP_LIBRARIES})
+
+target_link_libraries(gcs_task ${catkin_LIBRARIES} ${OpenMP_CXX_FLAGS})
+target_link_libraries(gcs_task ${OCTOMAP_LIBRARIES})
