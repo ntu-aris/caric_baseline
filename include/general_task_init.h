@@ -1024,6 +1024,7 @@ class gcs_task_assign{
                     double volum_more = volum_path - volumn_total * factor;
                     double scaled_param = 1 - volum_more / (BFS_result[j].getVolume());
                     BFS_result[j].generate_start(scaled_param, replaced_in, replaced_out);
+                    break;
                 }
             }
 
