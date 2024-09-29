@@ -25,11 +25,13 @@ Regarding technical specifics, we autonomously constructed a three-dimensional g
 ### Reference
 If you are using this package, please cite our paper as follows
 ```
-@article{xu2024cost,
+@inproceedings{xu2024costeffective,
   title={A Cost-Effective Cooperative Exploration and Inspection Strategy for Heterogeneous Aerial System},
   author={Xu, Xinhang and Cao, Muqing and Yuan, Shenghai and Nguyen, Thien Hoang and Nguyen, Thien-Minh and Xie, Lihua},
-  journal={arXiv preprint arXiv:2403.01225},
-  year={2024}
+  booktitle={2024 IEEE 18th International Conference on Control & Automation (ICCA)},
+  pages={673-678},
+  year={2024},
+  organization={IEEE}
 }
 ```
 
