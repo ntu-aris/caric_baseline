@@ -22,4 +22,15 @@ In the baseline approach, due to the mismatch between the capabilities of the ex
 Regarding technical specifics, we autonomously constructed a three-dimensional grid map and established sub-maps for each bounding box to facilitate task management. A concrete illustration is provided as follows:              
     baseline_planner.h/cpp
 
+### Reference
+If you are using this package, please cite our paper as follows
+```
+@article{xu2024cost,
+  title={A Cost-Effective Cooperative Exploration and Inspection Strategy for Heterogeneous Aerial System},
+  author={Xu, Xinhang and Cao, Muqing and Yuan, Shenghai and Nguyen, Thien Hoang and Nguyen, Thien-Minh and Xie, Lihua},
+  journal={arXiv preprint arXiv:2403.01225},
+  year={2024}
+}
+```
+
     
